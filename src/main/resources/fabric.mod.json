@@ -5,12 +5,19 @@
   "name": "Noteblock Helper",
   "description": "A helper that helps players to learn minecraft noteblock songs.",
   "authors": ["tomtom2211"],
-  "contact": {},
+  "contact": {
+    "homepage": "https://github.com/tomtom2211/Noteblock-helper",
+    "sources" : "https://github.com/tomtom2211/Noteblock-helper",
+    "issues" : "https://github.com/tomtom2211/Noteblock-helper/issues"
+  },
   "license": "All-Rights-Reserved",
   "environment": "client",
   "entrypoints": {
     "main": [
       "io.github.tomtom2211.noteblock_helper.Noteblock_helper"
+    ],
+    "modmenu": [
+      "io.github.tomtom2211.noteblock_helper.modconfig.ModMenuConfig"
     ]
   },
   "depends": {
