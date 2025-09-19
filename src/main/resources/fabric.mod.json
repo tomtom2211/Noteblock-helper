@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "noteblock_helper",
+  "version": "${version}",
+  "name": "Noteblock Helper",
+  "description": "A helper that helps players to learn minecraft noteblock songs.",
+  "authors": ["tomtom2211"],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "io.github.tomtom2211.noteblock_helper.Noteblock_helper"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
