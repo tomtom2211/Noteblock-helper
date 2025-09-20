@@ -36,7 +36,7 @@ public class Noteblock_helper implements ModInitializer {
         KeyBinding clearBlocksKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Remove all blocks", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X, "Noteblock helper"));
         KeyBinding removeBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Remove a block", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_Z, "Noteblock helper"));
         KeyBinding resetBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Start from 0", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "Noteblock helper"));
-        KeyBinding selectBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Select a block", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, "Noteblock helper"));
+        KeyBinding selectBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Add a block", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, "Noteblock helper"));
 
         ClientTickEvents.END_CLIENT_TICK.register(client-> {
             // Select block key
