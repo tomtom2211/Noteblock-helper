@@ -2,8 +2,6 @@ package io.github.tomtom2211.noteblock_helper;
 
 import io.github.tomtom2211.noteblock_helper.features.BasicHighlightLogic;
 import io.github.tomtom2211.noteblock_helper.modconfig.Config;
-import io.github.tomtom2211.noteblock_helper.utils.BlockHighlighter;
-import io.github.tomtom2211.noteblock_helper.utils.BlockLookHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
@@ -14,21 +12,15 @@ import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.Box;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
 
 
 public class Noteblock_helper implements ModInitializer {
     @Environment(EnvType.CLIENT)
     public static final Logger LOGGER = LoggerFactory.getLogger("TomsAddons");
-    public static long buttonPressTime = System.currentTimeMillis();
-    public static int currentIndex=0;
 
     @Override
     public void onInitialize() {
