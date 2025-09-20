@@ -20,39 +20,48 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import java.util.Objects;
 
 
 public class Noteblock_helper implements ModInitializer {
     @Environment(EnvType.CLIENT)
     public static final Logger LOGGER = LoggerFactory.getLogger("TomsAddons");
     public static long buttonPressTime = System.currentTimeMillis();
+    public static int currentIndex=0;
 
     @Override
     public void onInitialize() {
         Config.load();
 
-        KeyBinding clearBlocksKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Clear all blocks", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X, "Noteblock helper"));
-        KeyBinding removeBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Remove Block", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_Z, "Noteblock helper"));
-        KeyBinding selectBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Select Block", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, "Noteblock helper"));
+        KeyBinding clearBlocksKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Remove all blocks", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X, "Noteblock helper"));
+        KeyBinding removeBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Remove a block", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_Z, "Noteblock helper"));
+        KeyBinding resetBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Start from 0", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "Noteblock helper"));
+        KeyBinding selectBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Select a block", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, "Noteblock helper"));
 
         ClientTickEvents.END_CLIENT_TICK.register(client-> {
-            //Select block key
+            // Select block key
             if(selectBlockKey.wasPressed()&&System.currentTimeMillis()-buttonPressTime>=100&&client.player!=null){
-                Config.config.selectedBlocks.add(BlockLookHelper.getLookedAtBlockBox(client,5));
                 buttonPressTime = System.currentTimeMillis();
+                currentIndex=0;
+                Config.config.selectedBlocks.add(BlockLookHelper.getLookedAtBlockBox(client,5));
                 client.player.sendMessage(Text.of("Block added!"),false);
                 Config.save();
             }
-            //Remove block key
+            // Remove block key
             if(removeBlockKey.wasPressed()&&System.currentTimeMillis()-buttonPressTime>=100){
                 Config.config.selectedBlocks.remove(BlockLookHelper.getLookedAtBlockBox(client, 5));
                 Config.save();
             }
-            //Clear all blocks key
+            // Clear all blocks key
             if(clearBlocksKey.wasPressed()&&System.currentTimeMillis()-buttonPressTime>=100){
                 Config.config.selectedBlocks.clear();
                 Config.save();
+            }
+            // Reset index to 0
+            if(resetBlockKey.wasPressed()&&System.currentTimeMillis()-buttonPressTime>=100){
+                buttonPressTime = System.currentTimeMillis();
+                currentIndex=0;
+                Objects.requireNonNull(client.player).sendMessage(Text.of("Starting from beginning..."),true);
             }
         });
 
@@ -61,17 +70,29 @@ public class Noteblock_helper implements ModInitializer {
             if(Config.config.selectedBlocks.isEmpty()){
                 Config.load();
                 assert MinecraftClient.getInstance().player != null;
-                MinecraftClient.getInstance().player.sendMessage(Text.of("Reset"), false);
+                MinecraftClient.getInstance().player.sendMessage(Text.of("Reset"), true);
             }
             else if(Config.config.highlightSelectedBlocks) {
-                Box selectedBlock = Config.config.selectedBlocks.getFirst();
-                BlockHighlighter.highlightBlock(selectedBlock, context);
+                try {
+                    Objects.requireNonNull(MinecraftClient.getInstance().player).sendMessage(Text.of("Note:" + currentIndex), true);
+                    Box selectedBlock = Config.config.selectedBlocks.get(currentIndex);
+                    BlockHighlighter.highlightBlock(selectedBlock, context);
+                }
+                catch(IndexOutOfBoundsException e){
+                    System.out.println("Not good");
+                }
             }
         });
 
         AttackBlockCallback.EVENT.register((playerEntity, world, hand, blockPos,direction) -> {
-            Box attackedBlock = new Box(blockPos);
-            Config.config.selectedBlocks.remove(attackedBlock);
+            if(System.currentTimeMillis()-buttonPressTime>=100) {
+                if (currentIndex < Config.config.selectedBlocks.size()-1) {
+                    currentIndex++;
+                } else {
+                    currentIndex = 0;
+                }
+                buttonPressTime=System.currentTimeMillis();
+            }
             return ActionResult.PASS;
         });
         LOGGER.info("Noteblock_helper successfully launched!");
