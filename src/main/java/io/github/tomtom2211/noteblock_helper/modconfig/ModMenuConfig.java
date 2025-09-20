@@ -19,7 +19,7 @@ public class ModMenuConfig implements ModMenuApi {
 
             // Creating the user input section
             var entryBuilder = builder.entryBuilder()
-                    .startBooleanToggle(Text.of("Enable selected block highlighter"), Config.config.highlightSelectedBlocks)
+                    .startBooleanToggle(Text.of("Enable selected selectedBlock highlighter"), Config.config.highlightSelectedBlocks)
                     .setDefaultValue(true)
                     .setSaveConsumer(newValue -> Config.config.highlightSelectedBlocks = newValue)
                     .build();
