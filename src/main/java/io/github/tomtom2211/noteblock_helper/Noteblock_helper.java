@@ -1,5 +1,6 @@
 package io.github.tomtom2211.noteblock_helper;
 
+import io.github.tomtom2211.noteblock_helper.features.BasicHighlightLogic;
 import io.github.tomtom2211.noteblock_helper.modconfig.Config;
 import io.github.tomtom2211.noteblock_helper.utils.BlockHighlighter;
 import io.github.tomtom2211.noteblock_helper.utils.BlockLookHelper;
@@ -33,68 +34,31 @@ public class Noteblock_helper implements ModInitializer {
     public void onInitialize() {
         Config.load();
 
+        BasicHighlightLogic basicHighlightLogic = new BasicHighlightLogic();
+
+        // Create KeyBindings
         KeyBinding clearBlocksKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Remove all blocks", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X, "Noteblock helper"));
         KeyBinding removeBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Remove a block", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_Z, "Noteblock helper"));
         KeyBinding resetBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Start from 0", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "Noteblock helper"));
         KeyBinding selectBlockKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Add a block", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, "Noteblock helper"));
 
+        // End_client_tick event
         ClientTickEvents.END_CLIENT_TICK.register(client-> {
-            // Select block key
-            if(selectBlockKey.wasPressed()&&System.currentTimeMillis()-buttonPressTime>=100&&client.player!=null){
-                buttonPressTime = System.currentTimeMillis();
-                currentIndex=0;
-                Config.config.selectedBlocks.add(BlockLookHelper.getLookedAtBlockBox(client,5));
-                client.player.sendMessage(Text.of("Block added!"),false);
-                Config.save();
-            }
-            // Remove block key
-            if(removeBlockKey.wasPressed()&&System.currentTimeMillis()-buttonPressTime>=100){
-                Config.config.selectedBlocks.remove(BlockLookHelper.getLookedAtBlockBox(client, 5));
-                Config.save();
-            }
-            // Clear all blocks key
-            if(clearBlocksKey.wasPressed()&&System.currentTimeMillis()-buttonPressTime>=100){
-                Config.config.selectedBlocks.clear();
-                Config.save();
-            }
-            // Reset index to 0
-            if(resetBlockKey.wasPressed()&&System.currentTimeMillis()-buttonPressTime>=100){
-                buttonPressTime = System.currentTimeMillis();
-                currentIndex=0;
-                Objects.requireNonNull(client.player).sendMessage(Text.of("Starting from beginning..."),true);
-            }
+            basicHighlightLogic.keybindInit(selectBlockKey, removeBlockKey, clearBlocksKey, resetBlockKey, client);
         });
 
+        // After_Entities event
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {
-            // Highlight logic (first block from the array is highlighted first)
-            if(Config.config.selectedBlocks.isEmpty()){
-                Config.load();
-                assert MinecraftClient.getInstance().player != null;
-                MinecraftClient.getInstance().player.sendMessage(Text.of("Reset"), true);
-            }
-            else if(Config.config.highlightSelectedBlocks) {
-                try {
-                    Objects.requireNonNull(MinecraftClient.getInstance().player).sendMessage(Text.of("Note:" + currentIndex), true);
-                    Box selectedBlock = Config.config.selectedBlocks.get(currentIndex);
-                    BlockHighlighter.highlightBlock(selectedBlock, context);
-                }
-                catch(IndexOutOfBoundsException e){
-                    System.out.println("Not good");
-                }
-            }
+            MinecraftClient client = MinecraftClient.getInstance();
+            basicHighlightLogic.renderInit(context, client);
         });
 
+        // AttackBlock callback
         AttackBlockCallback.EVENT.register((playerEntity, world, hand, blockPos,direction) -> {
-            if(System.currentTimeMillis()-buttonPressTime>=100) {
-                if (currentIndex < Config.config.selectedBlocks.size()-1) {
-                    currentIndex++;
-                } else {
-                    currentIndex = 0;
-                }
-                buttonPressTime=System.currentTimeMillis();
-            }
+            basicHighlightLogic.attackBlockInit();
             return ActionResult.PASS;
         });
+
         LOGGER.info("Noteblock_helper successfully launched!");
     }
 }
