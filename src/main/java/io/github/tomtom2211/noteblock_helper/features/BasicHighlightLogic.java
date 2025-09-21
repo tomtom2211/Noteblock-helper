@@ -17,19 +17,20 @@ public class BasicHighlightLogic {
     public static int currentIndex = 0;
 
     public static void keybindInit(KeyBinding selectBlockKey, KeyBinding removeBlockKey, KeyBinding clearBlocksKey, KeyBinding resetBlocksKey, MinecraftClient client){
-
         // Add a block key
         if (selectBlockKey.wasPressed() && System.currentTimeMillis() - buttonPressTime >= 100 && client.player != null) {
             buttonPressTime = System.currentTimeMillis();
             Box lookingAtBlock = BlockLookHelper.getLookedAtBlockBox(client, 5);
-            if(currentIndex>0) {
-                Config.config.selectedBlocks.add(currentIndex++, lookingAtBlock);
+            try {
+                if (currentIndex > 0) {
+                    Config.config.selectedBlocks.add(currentIndex++, lookingAtBlock);
+                } else if (currentIndex == 0) {
+                    Config.config.selectedBlocks.add(lookingAtBlock);
+                }
+                client.player.sendMessage(Text.of("Block added!"), false);
+                Config.save();
             }
-            else if (currentIndex==0){
-                Config.config.selectedBlocks.add(lookingAtBlock);
-            }
-            client.player.sendMessage(Text.of("Block added!"), false);
-            Config.save();
+            catch(IndexOutOfBoundsException ignored){}
         }
         // Remove a block key
         if (removeBlockKey.wasPressed() && System.currentTimeMillis() - buttonPressTime >= 100) {
