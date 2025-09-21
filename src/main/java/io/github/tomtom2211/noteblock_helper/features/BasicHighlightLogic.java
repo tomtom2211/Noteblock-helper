@@ -16,18 +16,22 @@ public class BasicHighlightLogic {
     public static long buttonPressTime = System.currentTimeMillis();
     public static int currentIndex = 0;
 
-    public void keybindInit(KeyBinding selectBlockKey, KeyBinding removeBlockKey, KeyBinding clearBlocksKey, KeyBinding resetBlocksKey, MinecraftClient client){
+    public static void keybindInit(KeyBinding selectBlockKey, KeyBinding removeBlockKey, KeyBinding clearBlocksKey, KeyBinding resetBlocksKey, MinecraftClient client){
 
-        // Select block key
+        // Add a block key
         if (selectBlockKey.wasPressed() && System.currentTimeMillis() - buttonPressTime >= 100 && client.player != null) {
             buttonPressTime = System.currentTimeMillis();
-            currentIndex = 0;
-            Config.config.selectedBlocks.add(BlockLookHelper.getLookedAtBlockBox(client, 5));
+            Box lookingAtBlock = BlockLookHelper.getLookedAtBlockBox(client, 5);
+            if(currentIndex>0) {
+                Config.config.selectedBlocks.add(currentIndex++, lookingAtBlock);
+            }
+            else if (currentIndex==0){
+                Config.config.selectedBlocks.add(lookingAtBlock);
+            }
             client.player.sendMessage(Text.of("Block added!"), false);
             Config.save();
         }
-
-        // Remove block key
+        // Remove a block key
         if (removeBlockKey.wasPressed() && System.currentTimeMillis() - buttonPressTime >= 100) {
             Config.config.selectedBlocks.remove(BlockLookHelper.getLookedAtBlockBox(client, 5));
             Config.save();
@@ -47,7 +51,7 @@ public class BasicHighlightLogic {
         }
     }
 
-    public void renderInit(WorldRenderContext context, MinecraftClient client){
+    public static void renderInit(WorldRenderContext context, MinecraftClient client){
         // If the feature is enabled, then get the selected ordered block and highlight it
         if(Config.config.highlightSelectedBlocks) {
             try {
@@ -55,13 +59,11 @@ public class BasicHighlightLogic {
                 Box selectedBlock = Config.config.selectedBlocks.get(currentIndex);
                 BlockHighlighter.highlightBlock(selectedBlock, context);
             }
-            catch(IndexOutOfBoundsException e){
-                System.out.println("Out of bounds error during BasicHighlightLogic!");
-            }
+            catch(IndexOutOfBoundsException ignored){}
         }
     }
 
-    public void attackBlockInit(){
+    public static void attackBlockInit(){
         // Add the number 1 to the currentIndex whenever a block is hit
         if(System.currentTimeMillis()-buttonPressTime>=100) {
             if (currentIndex < Config.config.selectedBlocks.size()-1) {

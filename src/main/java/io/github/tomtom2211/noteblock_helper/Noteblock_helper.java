@@ -20,13 +20,12 @@ import org.slf4j.LoggerFactory;
 
 public class Noteblock_helper implements ModInitializer {
     @Environment(EnvType.CLIENT)
-    public static final Logger LOGGER = LoggerFactory.getLogger("TomsAddons");
+    public static final Logger LOGGER = LoggerFactory.getLogger("NoteBlockHelper");
 
     @Override
     public void onInitialize() {
         Config.load();
 
-        BasicHighlightLogic basicHighlightLogic = new BasicHighlightLogic();
 
         // Create KeyBindings
         KeyBinding clearBlocksKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Remove all blocks", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X, "Noteblock helper"));
@@ -36,18 +35,18 @@ public class Noteblock_helper implements ModInitializer {
 
         // End_client_tick event
         ClientTickEvents.END_CLIENT_TICK.register(client-> {
-            basicHighlightLogic.keybindInit(selectBlockKey, removeBlockKey, clearBlocksKey, resetBlockKey, client);
+            BasicHighlightLogic.keybindInit(selectBlockKey, removeBlockKey, clearBlocksKey, resetBlockKey, client);
         });
 
         // After_Entities event
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();
-            basicHighlightLogic.renderInit(context, client);
+            BasicHighlightLogic.renderInit(context, client);
         });
 
         // AttackBlock callback
         AttackBlockCallback.EVENT.register((playerEntity, world, hand, blockPos,direction) -> {
-            basicHighlightLogic.attackBlockInit();
+            BasicHighlightLogic.attackBlockInit();
             return ActionResult.PASS;
         });
 
