@@ -17,6 +17,8 @@ public class Config {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static Config config = new Config();
+    public int highlightFirstColor = 0x00ffff;
+    public int highlightSecondColor =0x0080ff;
     public boolean highlightSelectedBlocks = false;
     public ArrayList<Box> selectedBlocks = new ArrayList<>();
     public static void load(){

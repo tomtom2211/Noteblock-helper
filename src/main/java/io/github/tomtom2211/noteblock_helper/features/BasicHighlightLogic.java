@@ -56,8 +56,15 @@ public class BasicHighlightLogic {
         if(Config.config.highlightSelectedBlocks) {
             try {
                 Objects.requireNonNull(client.player).sendMessage(Text.of("Note:" + currentIndex), true);
-                Box selectedBlock = Config.config.selectedBlocks.get(currentIndex);
-                BlockHighlighter.highlightBlock(selectedBlock, context);
+                Box firstBlock = Config.config.selectedBlocks.get(currentIndex);
+                int firstColor = Config.config.highlightFirstColor & 0xFFFFFF;
+                BlockHighlighter.highlightBlock(firstBlock, context, firstColor);
+            }
+            catch(IndexOutOfBoundsException ignored){}
+            try{
+                Box secondBlock = Config.config.selectedBlocks.get(currentIndex+1);
+                int secondColor = Config.config.highlightSecondColor & 0xFFFFFF;
+                BlockHighlighter.highlightBlock(secondBlock,context,secondColor);
             }
             catch(IndexOutOfBoundsException ignored){}
         }

@@ -8,10 +8,17 @@ import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+
+import java.awt.*;
 import java.util.Objects;
 
 public class BlockHighlighter {
-    public static void highlightBlock(Box block, WorldRenderContext context){
+    public static void highlightBlock(Box block, WorldRenderContext context, int rgb){
+        float r = ((rgb >> 16) & 0xFF) / 255f;
+        float g = ((rgb >> 8) & 0xFF) / 255f;
+        float b = (rgb & 0xFF) / 255f;
+        float a = 1f; // fully opaque
+
         if(block!=null) {
             MatrixStack matrices = context.matrixStack(); // Gives a current game view state (yaw/distance etc.)
             VertexConsumerProvider consumers = context.consumers(); // Create a consumer to let minecraft know you want to render something
@@ -22,7 +29,7 @@ public class BlockHighlighter {
                         Objects.requireNonNull(matrices),
                         buffer,
                         shifted,
-                        1.0f, 0.0f, 0.0f, 1.0f // RGBA = red
+                        r,g,b,a
                 );
         }
     }
