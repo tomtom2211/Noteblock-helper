@@ -18,7 +18,7 @@ public class Config {
 
     public static Config config = new Config();
     public int highlightFirstColor = 0x00ffff;
-    public int highlightSecondColor =0x0080ff;
+    public int highlightSecondColor = 0x0080ff;
     public boolean highlightSelectedBlocks = false;
     public ArrayList<Box> selectedBlocks = new ArrayList<>();
     public static void load(){

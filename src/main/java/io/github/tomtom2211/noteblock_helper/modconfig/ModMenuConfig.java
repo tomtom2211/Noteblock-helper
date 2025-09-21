@@ -40,7 +40,7 @@ public class ModMenuConfig implements ModMenuApi {
 
             general.addEntry(
                     entryBuilder
-                            .startColorField(Text.of("Second block highlight Color"), Config.config.highlightFirstColor)
+                            .startColorField(Text.of("Second block highlight Color"), Config.config.highlightSecondColor)
                             .setAlphaMode(false)
                             .setDefaultValue(0x0080ff)
                             .setSaveConsumer(newValue -> Config.config.highlightSecondColor = newValue)
